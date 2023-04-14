@@ -11,6 +11,40 @@ import BarChartComponent from "./components/BarChartComponent";
 
 const URL = "http://localhost:3001/api/";
 
+function formatColumns(responseData) {
+  const excludedKeys = ["specification", "createdAt", "updatedAt"];
+
+  const columnsData = [
+    {
+      field: "specification",
+      headerName: "Wyszczególnienie",
+      width: 300,
+    },
+    ...Object.entries(responseData[0])
+      .filter(([key]) => !excludedKeys.includes(key))
+      .map(([key, value]) => ({
+        field: key,
+        headerName: key,
+        width: 70,
+      })),
+  ];
+
+  return columnsData;
+}
+
+function formatRows(responseData) {
+  const rows = responseData.map((row, id) => {
+    const { specification, createdAt, updatedAt, ...data } = row;
+    return {
+      specification,
+      ...data,
+      id,
+    };
+  });
+
+  return rows;
+}
+
 const theme = createTheme({
   palette: {
     mode: "dark",
@@ -21,50 +55,14 @@ const theme = createTheme({
 });
 
 function App() {
-  const [response, setResponse] = React.useState("");
-  const [columns, setColumns] = React.useState([]);
-  const [rows, setRows] = React.useState([]);
+  const [industryData, setIndustryData] = React.useState("");
 
   useEffect(() => {
-    console.log("useEffect is called");
     const fetchData = async () => {
       try {
         const res = await axios.get(`${URL}industry-data`);
         const responseData = res.data;
-        setResponse(responseData);
-
-        const excludedKeys = ["specification", "createdAt", "updatedAt"];
-
-        const columnsData = [
-          {
-            field: "specification",
-            headerName: "Wyszczególnienie",
-            width: 300,
-          },
-          ...Object.entries(responseData[0])
-            .filter(([key]) => !excludedKeys.includes(key))
-            .map(([key, value]) => ({
-              field: key,
-              headerName: key,
-              width: 70,
-            })),
-        ];
-        setColumns(columnsData);
-
-        const rows = responseData.map((row, id) => {
-          const { specification, createdAt, updatedAt, ...data } = row;
-          return {
-            specification,
-            ...data,
-            id,
-          };
-        });
-
-        setRows(rows);
-
-        console.log("rows ", rows);
-        console.log("columns", columnsData);
-        console.log("response", response);
+        setIndustryData(responseData);
       } catch (error) {
         console.error(error);
       }
@@ -73,7 +71,7 @@ function App() {
     fetchData();
   }, []);
 
-  if (!columns.length || !rows.length) return;
+  if (!industryData.length) return;
 
   return (
     <ThemeProvider theme={theme}>
@@ -94,14 +92,14 @@ function App() {
           naturalnego
         </Typography>
         <Box sx={{ flex: 1, width: "100%" }}>
-          <BarChartComponent data={response} />
+          <BarChartComponent data={industryData} />
         </Box>
         <Box sx={{ flex: 1, width: "100%", px: 3, my: 3 }}>
           <Box sx={{ height: "100%" }}>
             <DataGrid
               rowHeight={60}
-              rows={rows}
-              columns={columns}
+              rows={formatRows(industryData)}
+              columns={formatColumns(industryData)}
               pageSize={5}
               rowsPerPageOptions={[5]}
             />
