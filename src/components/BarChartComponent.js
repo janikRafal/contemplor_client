@@ -14,16 +14,15 @@ const BarChartComponent = ({ data }) => {
   // Zmień zakres lat na 2005-2021
   const years = Array.from({ length: 2022 - 2005 }, (_, i) => 2005 + i);
 
-  // Pobierz tylko pierwsze 5 obiektów z danych
-  const firstFiveItems = data.slice(0, 5);
-  console.log("gowno", firstFiveItems);
+  // Pobierz wszystkie obiekty z danych
+  const allItems = data;
 
   const formattedData = years.map((year) => {
     const yearData = {
       year,
     };
 
-    firstFiveItems.forEach((item) => {
+    allItems.forEach((item) => {
       if (item[year] !== undefined) {
         // Dodaj wartość tylko wtedy, gdy jest zdefiniowana dla danego roku
         yearData[item.specification] = item[year];
@@ -33,7 +32,16 @@ const BarChartComponent = ({ data }) => {
     return yearData;
   });
 
-  const colors = ["#8884d8", "#82ca9d", "#ffc658", "#FF8042", "#FFBB28"];
+  const colors = [
+    "#8884d8",
+    "#82ca9d",
+    "#ffc658",
+    "#FF8042",
+    "#FFBB28",
+    "#a9a9a9", // Dodaj odcienie szarości dla zanieczyszczeń
+    "#808080",
+    "#696969",
+  ];
 
   return (
     <ResponsiveContainer width="100%" height="100%">
@@ -53,7 +61,7 @@ const BarChartComponent = ({ data }) => {
         <YAxis />
         <Tooltip />
         <Legend />
-        {firstFiveItems.map((item, index) => (
+        {allItems.map((item, index) => (
           <Bar
             key={item.specification}
             dataKey={item.specification}
