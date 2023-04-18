@@ -10,23 +10,23 @@ import axios from "axios";
 import BarChartComponent from "./components/BarChartComponent";
 import { Button, ButtonGroup } from "@mui/material";
 
-const URL = "http://localhost:3001/api/";
+const URL = "http://localhost:3001/api/"; //fragment adresu url do laczenia sie z backendem
 
-function formatColumns(responseData) {
+function formatColumns(responseData) { 
   const excludedKeys = ["specification", "createdAt", "updatedAt"];
 
   const columnsData = [
     {
       field: "specification",
       headerName: "Wyszczególnienie",
-      width: 300,
+      width: 350,
     },
     ...Object.entries(responseData[0])
       .filter(([key]) => !excludedKeys.includes(key))
       .map(([key, value]) => ({
         field: key,
         headerName: key,
-        width: 70,
+        width: 80,
       })),
   ];
 
@@ -145,7 +145,7 @@ function App() {
         setDataForChart(industrialWastewater);
       }}
     >
-      Ścieki przemysłowe
+      Ścieki
     </Button>,
     <Button
       key="wastewaterTreatment"
